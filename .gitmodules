@@ -1,0 +1,3 @@
+[submodule "g2p_hun"]
+	path = g2p_hun
+	url = https://github.com/Hearlex/g2p_hun
