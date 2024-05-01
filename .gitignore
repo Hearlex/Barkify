@@ -132,3 +132,8 @@ dmypy.json
 
 # datasets & checkpoints
 work_env/
+datasets/
+cv-corpus*/
+
+# other repos
+bark/

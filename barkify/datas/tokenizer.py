@@ -2,6 +2,7 @@
 import string
 from pypinyin import lazy_pinyin, Style
 from g2p_en import G2p
+from g2p import make_g2p
 
 class SplitTokenizer:
     def __init__(self, **kwargs):
@@ -29,13 +30,22 @@ class SplitTokenizer:
 
 class PhonemeTokenizer(SplitTokenizer):
     def __init__(self, **kwargs):
-        self._g2p = G2p()
+        self._g2p = make_g2p('hun', 'hun-ipa')
         self._token2id = {i:idx + 1 for idx, i in enumerate(self._g2p.phonemes)} 
         self._id2token = {idx + 1:i for idx, i in enumerate(self._g2p.phonemes)} 
 
     def g2p(self, text):
         text = self._g2p(text)
         return " ".join(["<space>" if i == ' ' else i for i in text])
+        return text
+
+class HunPhonemeTokenizer():
+    def __init__(self, **kwargs):
+        self._g2p = make_g2p('hun', 'hun-ipa')
+
+    def g2p(self, text):
+        text = self._g2p(text)
+        return text
 
 class ZHTokenizer(SplitTokenizer):
     def __init__(self, **kwargs):

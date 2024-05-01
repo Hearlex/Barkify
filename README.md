@@ -1,6 +1,8 @@
 # barkify
 Barkify: an unoffical repo for training Bark, a text-prompted generative audio model by suno-ai. 
 
+This fork is for hungarian training.
+
 Bark has two GPT style models which is compatible for prompting and other tricks from NLP. Bark realize a great real world tts result but the repo itself doesn't a training recipe. We want to conduct some experiments or train this model. Here we release our basic training code which might be a guidance of training for open source community. 
 
 ## Process dataset
