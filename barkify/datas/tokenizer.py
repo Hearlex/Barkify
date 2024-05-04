@@ -1,13 +1,16 @@
 # TODO: integrate with NeMo tokenizer?
 import string
-from pypinyin import lazy_pinyin, Style
-from g2p_en import G2p
 from g2p import make_g2p
+from ipapy import IPA_CHARS
+
+ENGLISH_PRONUNCIATION_LIST = []
+
+IPA_LIST = [str(c) for c in IPA_CHARS] + list(",.?!-") + ['<space>']
 
 class SplitTokenizer:
     def __init__(self, **kwargs):
-        self._token2id = {i:idx + 1 for idx, i in enumerate(ENGLISH_PRONUNCIATION_LIST)} 
-        self._id2token = {idx + 1:i for idx, i in enumerate(ENGLISH_PRONUNCIATION_LIST)} 
+        self._token2id = {i:idx + 1 for idx, i in enumerate(IPA_LIST)} 
+        self._id2token = {idx + 1:i for idx, i in enumerate(IPA_LIST)} 
     
     def __call__(self, text):
         text = self.g2p(text)
@@ -20,15 +23,17 @@ class SplitTokenizer:
     
     def token2id(self, text):
         token = []
-        for i in text.split():
+        for i in text:
             if i == ' ':
                 token.append(self._token2id['<space>'])
             elif self._token2id.get(i, None):
                 token.append(self._token2id[i])
+            else:
+                raise ValueError(f"Token {i} not found in token2id")
 
         return token
 
-class PhonemeTokenizer(SplitTokenizer):
+""" class PhonemeTokenizer(SplitTokenizer):
     def __init__(self, **kwargs):
         self._g2p = make_g2p('hun', 'hun-ipa')
         self._token2id = {i:idx + 1 for idx, i in enumerate(self._g2p.phonemes)} 
@@ -37,17 +42,18 @@ class PhonemeTokenizer(SplitTokenizer):
     def g2p(self, text):
         text = self._g2p(text)
         return " ".join(["<space>" if i == ' ' else i for i in text])
-        return text
+        return text """
 
-class HunPhonemeTokenizer():
+class HunPhonemeTokenizer(SplitTokenizer):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._g2p = make_g2p('hun', 'hun-ipa')
 
     def g2p(self, text):
-        text = self._g2p(text)
+        text = self._g2p(text).output_string
         return text
 
-class ZHTokenizer(SplitTokenizer):
+""" class ZHTokenizer(SplitTokenizer):
     def __init__(self, **kwargs):
         # A basic english and chinese G2P tokenizer 
         self._token2id = {i:idx + 1 for idx, i in enumerate(PINYIN_PRONUNCIATION_LIST)} 
@@ -87,13 +93,16 @@ PINYIN_PRONUNCIATION_LIST = ENGLISH_PRONUNCIATION_LIST + [
     '@iao2', '@ua4', '@ong2', '@uen2', '@iong3', '@er', '@v1', '@uang4', '@ia3', '@ve3', '@ua2', '@van3', '@ao2',
     '@o4', '@ua3', '@vn4', '@iong2', '@io1', '@uai1', '@ou', '@uai2', '@ua', '@ueng1', '@o', '@uai3', '@o3', '@uo',
 ] + list("、，。")
-# ] + list(string.ascii_lowercase) + list("、，。")
+# ] + list(string.ascii_lowercase) + list("、，。") """
 
 if __name__ == "__main__":
-    tokenizer = ZHTokenizer()
+    tokenizer = HunPhonemeTokenizer()
+    print(tokenizer._token2id)
+    print(tokenizer._id2token)
+    """ tokenizer = ZHTokenizer()
     print(tokenizer.g2p("I'm tom."))
-    print(tokenizer("I'm tom."))
-
-    tokenizer = PhonemeTokenizer()
+    print(tokenizer("I'm tom.")) """
+    
+    """ tokenizer = PhonemeTokenizer()
     print(tokenizer.g2p("I'm tom."))
-    print(tokenizer("I'm tom."))
+    print(tokenizer("I'm tom.")) """

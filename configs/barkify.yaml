@@ -1,6 +1,6 @@
 name: ljspeech
 stage: 1
-start_path: ???
+start_path: datasets
 
 common:
   trainer:
